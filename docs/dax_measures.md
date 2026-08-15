@@ -4,18 +4,18 @@ This document lists the main Power BI measures used in the dashboard. The measur
 
 ## Customer status methodology
 
-Customer status is based on delivered-order activity relative to the dataset observation period:
+Customer status is based on delivered-order activity relative to the dataset observation period. The groups are mutually exclusive:
 
-- **Active:** at least one delivered order in the most recent 90 days.
-- **At Risk:** previously ordered, but no delivered order for 60–89 days.
-- **Churned:** previously ordered, but no delivered order for 90+ days.
+- **Active:** last delivered order was less than 60 days before the observation end date.
+- **At Risk:** last delivered order was 60–89 days before the observation end date.
+- **Churned:** last delivered order was 90+ days before the observation end date.
 - **Never Ordered:** no delivered-order history.
 
-The SQL inactivity query uses the 60-day threshold as an **At Risk indicator**. It should not be described as the final churn definition.
+The observation end date is December 31, 2025. `Never Ordered` customers are excluded from the simplified retention denominator because they never became retained customers.
 
 ## Customer KPIs
 
-### Active Customers (90D)
+### Active Customers
 
 Counts customers classified as `Active` by the customer-status logic.
 
@@ -67,7 +67,7 @@ CALCULATE(
 
 ### Retention Rate
 
-Retention is calculated among customers classified as active or churned, excluding `Never Ordered` and the intermediate `At Risk` segment from this simplified retention KPI.
+Retention is calculated among customers classified as Active or Churned, excluding `Never Ordered` and the intermediate `At Risk` segment from this simplified KPI.
 
 ```DAX
 Retention Rate =
@@ -77,6 +77,8 @@ DIVIDE(
     0
 )
 ```
+
+> The monthly retention analysis in SQL uses a separate month-over-month definition: customers active in the previous month who also order in the current month divided by previous-month active customers.
 
 ## Revenue KPIs
 
@@ -136,4 +138,5 @@ DIVIDE(
 - Delivered-order filters keep cancelled orders from inflating revenue and order KPIs.
 - Retention is not the same as `1 - churn rate` unless the numerator and denominator definitions are aligned.
 - `At Risk` is intentionally kept separate from `Churned`; an at-risk customer can still be reactivated before becoming churned.
-- The 60-day SQL inactivity check is an early-warning measure, while the 90-day threshold is used for the Active/Churned classification.
+- The SQL monthly retention KPI and the simplified Power BI customer-status retention KPI answer different questions and should not be presented as the same metric.
+- Weather and distance findings are observational associations, not causal claims.
