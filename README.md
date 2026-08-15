@@ -21,8 +21,8 @@ This project simulates that problem using a relational food-delivery dataset and
 - Which customers are active, at risk, churned or have never ordered?
 - Which customers and membership tiers are most valuable?
 - Which cities, restaurants and cuisines drive revenue?
-- Does delivery distance affect delivery time and on-time performance?
-- How do weather and delivery performance relate to customer experience?
+- Does delivery distance relate to delivery reliability?
+- How do weather conditions relate to delivery performance?
 - Where should retention and operational improvement efforts be prioritized?
 
 ## 📊 Dataset & Data Model
@@ -64,7 +64,7 @@ Checks include:
 - Invalid ratings
 - Referential consistency
 
-The goal was to prevent incorrect relationships or invalid records from producing misleading business conclusions.
+All tested critical validation checks returned **zero exceptions** in the final dataset.
 
 ## 🧮 SQL Analysis
 
@@ -85,7 +85,7 @@ The project contains **30 business-focused SQL questions**, supported by separat
 - Menu-item revenue
 - Top restaurants by city
 - Delivery time and distance
-- Weather impact
+- Weather and delivery performance
 - Delivery ratings and complaints
 - Customer value by city
 - Cumulative revenue
@@ -98,18 +98,18 @@ The project contains **30 business-focused SQL questions**, supported by separat
 
 ## 👥 Customer Status Methodology
 
-Customer status is based on delivered-order activity relative to the dataset observation period.
+Customer status is based on delivered-order activity relative to the dataset observation period. The groups are mutually exclusive.
 
 | Status | Definition | Business meaning |
 |---|---|---|
-| **Active** | At least one delivered order in the most recent 90 days | Currently engaged customer |
-| **At Risk** | Previously ordered, but no delivered order for 60–89 days | Early retention opportunity |
-| **Churned** | Previously ordered, but inactive for 90+ days | Longer-term customer loss |
+| **Active** | Last delivered order was <60 days before the observation end date | Currently engaged customer |
+| **At Risk** | Last delivered order was 60–89 days before the observation end date | Early retention opportunity |
+| **Churned** | Last delivered order was ≥90 days before the observation end date | Longer-term customer loss |
 | **Never Ordered** | No delivered-order history | Registered but never retained |
 
-**Important:** The SQL inactivity query uses the **60-day threshold as an At Risk indicator**. It is not presented as the final churn definition. The 90-day threshold is used for the Active/Churned classification.
+The observation end date is **December 31, 2025**, based on the latest delivered-order activity used by the analysis.
 
-`Never Ordered` customers are excluded from the simplified retention denominator because they were never retained customers.
+`Never Ordered` customers are excluded from the simplified retention denominator because they never became retained customers.
 
 ## 📊 Power BI Dashboard
 
@@ -155,19 +155,57 @@ Covers active, at-risk, churned and never-ordered customers, plus churn by membe
 
 ![Churn Analysis](screenshots/churn_analysis.png)
 
-## 💡 Business Insights & Recommendations
+## 💡 Key Business Insights & Recommendations
 
-The analysis is designed to identify actionable opportunities such as:
+### 1. Customer churn is the primary retention problem
 
-- Prioritize high-value customers for retention and reactivation campaigns.
-- Target cities with elevated customer inactivity or churn.
-- Use membership-level differences to design more relevant retention offers.
-- Investigate longer-distance routes with weaker on-time performance.
-- Prepare additional delivery capacity for adverse weather conditions.
-- Benchmark low-rated or low-revenue restaurant partners against stronger performers.
-- Monitor repeat-order rate and customer-status movement after retention initiatives.
+Of **3,000 registered customers**, **1,812 (60.4%) are classified as Churned**. Among customers with at least one delivered order, the churn share is approximately **66.0%**.
 
-Business recommendations are based on the analytical outputs rather than generic dashboard observations.
+**Business impact:** The business has a substantial reactivation opportunity among customers it has already acquired.
+
+**Recommendation:** Prioritize high-value At Risk and Churned customers for targeted reactivation campaigns and monitor repeat-order rate after intervention.
+
+### 2. Monthly customer retention is weak
+
+Month-over-month customer retention averages approximately **17.1%** across the observation period, with **18.2%** in December 2025.
+
+**Business impact:** Revenue activity can continue while customer continuity remains weak.
+
+**Recommendation:** Track 30-, 60- and 90-day repeat-order rates and test retention offers by customer value, city and membership tier.
+
+### 3. Churn rate and churn volume identify different city priorities
+
+Among customers with delivered-order history, **Jaipur has the highest churn rate at 70.3%**, while **Delhi has the largest absolute churn population with 340 churned customers**.
+
+**Business impact:** Prioritizing cities using churn rate alone could overlook locations with a larger number of affected customers.
+
+**Recommendation:** Use both churn rate and churned-customer volume to prioritize city-level retention interventions.
+
+### 4. Pro customers have substantially higher order value
+
+Average order value is approximately **₹347 for Regular**, **₹528 for Gold** and **₹810 for Pro** customers. Pro AOV is approximately **2.3× Regular AOV**.
+
+**Business impact:** Pro customers represent a disproportionately valuable segment.
+
+**Recommendation:** Protect high-value Pro customers with targeted retention benefits and investigate which customer behaviors are associated with their higher spending. This is an observed association, not proof that membership causes higher spending.
+
+### 5. Longer-distance deliveries have weaker on-time performance
+
+On-time delivery falls from approximately **78.2% for orders under 3 km** to **74.1% for orders above 6 km**.
+
+**Business impact:** Longer delivery distances are associated with weaker delivery reliability in this dataset.
+
+**Recommendation:** Investigate long-distance zones for rider allocation, restaurant clustering, service-area design and ETA management.
+
+### 6. Adverse weather is strongly associated with delivery delays
+
+Average delivery time increases from **29.1 minutes in sunny conditions** to **49.2 minutes during rain** and **52.4 minutes during fog**. On-time delivery falls to **5.0% during rain** and **0% during fog** in the dataset.
+
+**Business impact:** Adverse weather coincides with substantially weaker delivery reliability.
+
+**Recommendation:** Introduce weather-aware operational planning, including additional delivery capacity, proactive ETA communication and temporary service-area adjustments during severe conditions.
+
+**Analytical caution:** These are observational relationships. The analysis shows association, not that weather alone causes delivery delays.
 
 ## 🛠️ Tools & Skills
 
@@ -185,7 +223,7 @@ Customer Churn · Customer Retention · Revenue Drivers · Restaurant Performanc
 
 ## 🎤 Interview Pitch
 
-> **I built an end-to-end food-delivery analytics case study using MySQL, SQL, Power BI and DAX. I first validated a 9-table relational dataset containing 3,000 customers and 10,000 orders, then performed 30 business-focused SQL analyses covering revenue, customer behavior, retention, restaurant performance and delivery operations. I then built a five-page Power BI dashboard to identify customer-risk patterns, revenue drivers and operational bottlenecks, and translated those findings into targeted business recommendations.**
+> **I built an end-to-end food-delivery analytics case study using MySQL, SQL, Power BI and DAX. I first validated a 9-table relational dataset containing 3,000 customers and 10,000 orders, then performed 30 business-focused SQL analyses covering revenue, customer behavior, retention, restaurant performance and delivery operations. The analysis found that 60.4% of registered customers were classified as churned, monthly retention averaged about 17.1%, and delivery reliability varied substantially by distance and weather conditions. I then built a five-page Power BI dashboard to investigate these patterns and translated the findings into targeted retention and operational recommendations.**
 
 ### Interview topics covered
 
@@ -197,7 +235,8 @@ Customer Churn · Customer Retention · Revenue Drivers · Restaurant Performanc
 - Why use `LAG()` for monthly growth?
 - Why distinguish At Risk from Churned?
 - How is retention calculated?
-- How would you prioritize a city with high churn?
+- Why can churn rate and churn volume lead to different city priorities?
+- Why should weather be described as associated with delays rather than as a proven cause?
 - What additional data would be required in a production environment?
 
 See the full [interview guide](docs/interview_guide.md) and [DAX documentation](docs/dax_measures.md).
