@@ -83,6 +83,8 @@ Data was validated before dashboard development. Checks include:
 
 The purpose was to make sure business conclusions were based on reliable relationships and valid records.
 
+**SQL validation screenshot:** [View data-quality results](sql/screenshots/data_quality.png)
+
 ---
 
 # 🧮 SQL Analysis
@@ -115,10 +117,13 @@ The SQL script contains **30 numbered business questions**, plus data-quality an
 
 `JOIN` • `GROUP BY` • `HAVING` • `CASE WHEN` • Subqueries • CTEs • `RANK()` • `DENSE_RANK()` • `ROW_NUMBER()` • `LAG()` • Window functions • `COUNT(DISTINCT ...)`
 
-### ⭐ Selected SQL questions
+### ⭐ SQL Analysis Screenshots
 
-| Question | Analysis | Screenshot |
-|---:|---|---|
+The repository contains **9 SQL screenshots** covering both validation and the most important business analyses:
+
+| Type | Question / Analysis | Screenshot |
+|---|---|---|
+| **Validation** | Data quality checks | [View](sql/screenshots/data_quality.png) |
 | **Q8** | Top customers by lifetime value | [View](sql/screenshots/customer_lifetime_value.png) |
 | **Q10** | Inactive customers | [View](sql/screenshots/inactive_customers.png) |
 | **Q12** | Monthly customer retention | [View](sql/screenshots/customer_retention.png) |
